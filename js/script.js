@@ -135,9 +135,11 @@ function addContactCard(contact) {
 
 function toggleFavorite(phoneNumber) {
   for (var i = 0; i < contacts.length; i++) {
-    if (contacts[i].phoneNumber === phoneNumber) {  
+    if (contacts[i].phoneNumber === phoneNumber) {
       contacts[i].favorite = !contacts[i].favorite;
-      totalFavorites = contacts[i].favorite ? totalFavorites + 1 : totalFavorites - 1;
+      totalFavorites = contacts[i].favorite
+        ? totalFavorites + 1
+        : totalFavorites - 1;
       break;
     }
   }
@@ -150,9 +152,11 @@ function toggleEmergency(phoneNumber) {
   for (var i = 0; i < contacts.length; i++) {
     if (contacts[i].phoneNumber === phoneNumber) {
       contacts[i].emergency = !contacts[i].emergency;
-      totalEmergency = contacts[i].emergency ? totalEmergency + 1 : totalEmergency - 1;
+      totalEmergency = contacts[i].emergency
+        ? totalEmergency + 1
+        : totalEmergency - 1;
       break;
-    } 
+    }
   }
   localStorage.setItem("contacts", JSON.stringify(contacts));
   renderContacts();
@@ -160,7 +164,7 @@ function toggleEmergency(phoneNumber) {
 }
 
 function addFavoriteContact(contact) {
-  if (contact.favorite) {  
+  if (contact.favorite) {
     var abbreviation = getContactAbbreviation(contact.fullName);
 
     var element = `          
@@ -181,7 +185,7 @@ function addFavoriteContact(contact) {
 }
 
 function addEmergencyContact(contact) {
-  if (contact.emergency) {    
+  if (contact.emergency) {
     var abbreviation = getContactAbbreviation(contact.fullName);
     var element = ` <div class="contact-item">
                   <div class="contact-left">
@@ -290,23 +294,29 @@ function updateContactCounts() {
 
 saveForm.addEventListener("click", function () {
   if (validateContactForm() === false) {
-  
     return;
   }
-
-  contactId += 1;
-  contactObject.id = contactId;
-  contactObject.fullName = fullNameInput.value.trim();
-  contactObject.phoneNumber = phoneInput.value.trim();
-  contactObject.emailAddress = emailInput.value.trim();
-  contactObject.address = addressInput.value.trim();
-  contactObject.notes = notesInput.value.trim();
-  contactObject.favorite = favoriteInput.checked;
-  contactObject.emergency = emergencyInput.checked;
-  contactObject.group = groupInput.value;
-  totalEmergency = contactObject.emergency ? totalEmergency + 1 : totalEmergency;
-  totalFavorites = contactObject.favorite ? totalFavorites + 1 : totalFavorites;
-  contacts.push(contactObject);
+  if (selectedNumber !== "") {
+    updateContact(selectedNumber);
+  } else {
+    contactId += 1;
+    contactObject.id = contactId;
+    contactObject.fullName = fullNameInput.value.trim();
+    contactObject.phoneNumber = phoneInput.value.trim();
+    contactObject.emailAddress = emailInput.value.trim();
+    contactObject.address = addressInput.value.trim();
+    contactObject.notes = notesInput.value.trim();
+    contactObject.favorite = favoriteInput.checked;
+    contactObject.emergency = emergencyInput.checked;
+    contactObject.group = groupInput.value;
+    totalEmergency = contactObject.emergency
+      ? totalEmergency + 1
+      : totalEmergency;
+    totalFavorites = contactObject.favorite
+      ? totalFavorites + 1
+      : totalFavorites;
+    contacts.push(contactObject);
+  }
   renderContacts();
   clearForm();
   contactObject = {};
@@ -333,6 +343,22 @@ saveForm.addEventListener("click", function () {
   });
 });
 
+function updateContact(phoneNumber) {
+  var contact = contacts.find(function (c) {
+    return c.phoneNumber === phoneNumber;
+  });
+  if (contact) {
+    contact.fullName = fullNameInput.value.trim();
+    contact.phoneNumber = phoneInput.value.trim();
+    contact.emailAddress = emailInput.value.trim();
+    contact.address = addressInput.value.trim();
+    contact.notes = notesInput.value.trim();
+    contact.favorite = favoriteInput.checked;
+    contact.emergency = emergencyInput.checked;
+    contact.group = groupInput.value;
+  }
+}
+
 function clearForm() {
   form.reset();
   phoneInput.classList.remove("is-valid", "is-invalid");
@@ -353,30 +379,29 @@ function initialize() {
 
 function deleteContact(phoneNumber) {
   Swal.fire({
-  title: "Are you sure?",
-  text: "You won't be able to revert this!",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Yes, delete it!"
-}).then((result) => {
-  if (result.isConfirmed) {
-    contacts = contacts.filter(function (contact) {
-    return contact.phoneNumber !== phoneNumber;
-  });
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      contacts = contacts.filter(function (contact) {
+        return contact.phoneNumber !== phoneNumber;
+      });
 
-  renderContacts();
-  updateContactCounts();
-  localStorage.setItem("contacts", JSON.stringify(contacts));
-    Swal.fire({
-      title: "Deleted!",
-      text: "Contact has been deleted.",
-      icon: "success"
-    });
-  }
-});
-  
+      renderContacts();
+      updateContactCounts();
+      localStorage.setItem("contacts", JSON.stringify(contacts));
+      Swal.fire({
+        title: "Deleted!",
+        text: "Contact has been deleted.",
+        icon: "success",
+      });
+    }
+  });
 }
 
 function editContact(phoneNumber) {
