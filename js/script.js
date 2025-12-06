@@ -24,7 +24,7 @@ var groupInput = document.getElementById("group");
 var totalContactsCount = document.getElementById("total-contacts-count");
 var favoritesCount = document.getElementById("favorites-count");
 var emergencyCount = document.getElementById("emergency-count");
-
+var selectedNumber = "";
 var form = document.querySelector("form");
 var saveForm = document.getElementById("saveForm");
 
@@ -205,6 +205,9 @@ function validatePhone(phone) {
 }
 
 function checkPhoneExistence(phone) {
+  if (phone === selectedNumber) {
+    return false;
+  }
   for (var i = 0; i < contacts.length; i++) {
     if (contacts[i].phoneNumber === phone) {
       return true;
@@ -333,6 +336,7 @@ saveForm.addEventListener("click", function () {
 function clearForm() {
   form.reset();
   phoneInput.classList.remove("is-valid", "is-invalid");
+  selectedNumber = "";
 }
 
 function initialize() {
@@ -391,6 +395,7 @@ function editContact(phoneNumber) {
   }
   var modal = new bootstrap.Modal(document.getElementById("contactModal"));
   modal.show();
+  selectedNumber = phoneNumber;
 }
 
 function searchContacts() {
